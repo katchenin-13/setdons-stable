@@ -34,7 +34,6 @@
 {% endblock %}
 
 {% block java %}
-<script src="https://code.highcharts.com/highcharts.js"></script>
 <script>
     $(function () {
         init_select2();
@@ -69,7 +68,7 @@
 
         });
         function load_data(contrat, filters = []) {
-            $.getJSON("{{ path('app_gestion_statistique_audience_communaute_data') }}", { filters: filters }, function (data) {
+            $.getJSON("{{ path('app_gestion_statistique_demande_communaute_data') }}", { filters: filters }, function (data) {
                 console.log(data.series);
                 // Data retrieved from https://www.ssb.no/statbank/table/10467/
                 const chart = Highcharts.chart('container', {
@@ -83,7 +82,7 @@
                     },
 
                     subtitle: {
-                        text: 'AUDIENCES'
+                        text: 'Audiences'
                     },
 
                     legend: {

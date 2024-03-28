@@ -2,7 +2,7 @@
 {% form_theme form 'widget/fields-block.html.twig' %}
 <div class="card card-tabs card-stretch card-custom card-sticky">
     <div class="card-header card-header-stretch card-header-custom">
-        <h3 class="card-title"> Evolution audiences par mois et par communaute</h3>
+        <h3 class="card-title"> Evolution audiences par mois</h3>
     </div>
     <div class="card-body">
         {{ form_start(form)}}
@@ -11,21 +11,20 @@
             <div class="col-md-6">{{ form_row(form.communaute) }}</div>
         </div>
         {{ form_end(form, {render_rest: false}) }}
-        {# <div class="row">
+        <div class="row">
             <div class="d-flex flex-wrap flex-sm-nowrap mb-6">
                 <!--begin::Wrapper-->
                 <div class="flex-grow-1">
                     <br>
                     <!--begin::Info-->
-                    <div class="d-flex flex-wrap justify-content-start">
+                    <div class="d-flex flex-wrap justify-content-center">
                         <!--begin::Stats-->
                         <div class="d-flex flex-wrap">
                             <!--begin::Stat-->
                             <div class="border border-gray-300  rounded min-w-175px py-3 px-4 me-6 mb-3">
                                 <!--begin::Number-->
                                 <div class="d-flex align-items-center">
-
-                                    <div class="fs-4 fw-bold">{{compteAudience.audienceInitie|default(0)}}</div>
+                                    <div class="fs-4 fw-bold counted totalinitial">0</div>
                                 </div>
                                 <!--begin::Label-->
                                 <div class="fw-semibold fs-6 text-gray-400">En attends</div>
@@ -37,8 +36,8 @@
                                 <!--begin::Number-->
                                 <div class="d-flex align-items-center">
                                     <i class="ki-outline ki-arrow-down fs-3 text-danger me-2"></i>
-                                    <div class="fs-4 fw-bold counted" data-kt-countup="true" data-kt-countup-value="75"
-                                        data-kt-initialized="1">{{compteAudience.audienceValider|default(0)}}</div>
+                                    <div class="fs-4 fw-bold counted totalvalider" data-kt-countup="true" data-kt-countup-value="75"
+                                        data-kt-initialized="1"> 0 </div>
                                 </div>
                                 <!--end::Number-->
             
@@ -53,13 +52,13 @@
                                 <!--begin::Number-->
                                 <div class="d-flex align-items-center">
                                     <i class="ki-outline ki-arrow-up fs-3 text-success me-2"></i>
-                                    <div class="fs-4 fw-bold counted" data-kt-countup="true" data-kt-countup-value="15000"
-                                        data-kt-countup-prefix="" data-kt-initialized="1">{{audienceRejetr.audienceRejeter|default(0)}}</div>
+                                    <div class="fs-4 fw-bold counted totalrejeter" data-kt-countup="true" data-kt-countup-value="15000"
+                                        data-kt-countup-prefix="" data-kt-initialized="1">0</div>
                                 </div>
                                 <!--end::Number-->
             
                                 <!--begin::Label-->
-                                <div class="fw-semibold fs-6 text-danger">Rejeter</div>
+                                <div class="fw-semibold fs-6 text-gray-400">Rejeter</div>
                                 <!--end::Label-->
                             </div>
                             <!--end::Stat-->
@@ -80,7 +79,7 @@
 
                 </div>
             </div>
-        </div> #}
+        </div> 
         <div class="row">
             <div class="col-md-12">
                 <div class="alert-error"></div>
@@ -96,10 +95,7 @@
 {% endblock %}
 
 {% block java %}
-<script src="https://code.highcharts.com/highcharts.js"></script>
-
 <script>
-
     $(function () {
         init_select2();
         // load_data();
@@ -133,63 +129,51 @@
 
         });
         function load_data(contrat, filters = []) {
-            $.getJSON("{{ path('app_gestion_statistique_rapport_tableau_data') }}", { filters: filters }, function (data) {
+            $.getJSON("{{ path('app_gestion_statistique_audience_tableau_data') }}", { filters: filters }, function (data) {
                 console.log(data.series);
-            
-               Highcharts.chart('container', {
+                $('.totalinitial').html(data.compteAudience.audienceInitie);
+                $('.totalvalider').html(data.compteAudience.audienceValider);
+                $('.totalrejeter').html(data.compteAudience.audienceRejeter);
+
+                // Data retrieved from https://www.ssb.no/statbank/table/10467/
+                 // Data retrieved from https://worldpopulationreview.com/country-rankings/countries-by-density
+                
+
+                // Data retrieved from https://netmarketshare.com
+                Highcharts.chart('container', {
                     chart: {
-                        type: 'column',
-                        options3d: {
-                            enabled: true,
-                            alpha: 10,
-                            beta: 25,
-                            depth: 70
-                        }
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie'
                     },
                     title: {
-                        text: 'External trade in goods by country, Norway 2021',
-                        align: 'left'
+                        text: 'Evolution audiences par année et par communauté',
+                        align: 'center'
                     },
-                    subtitle: {
-                        text: 'Source: ' +
-                            '<a href="https://www.ssb.no/en/statbank/table/08804/"' +
-                            'target="_blank">SSB</a>',
-                        align: 'left'
+                    tooltip: {
+                        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
                     },
-                    plotOptions: {
-                        column: {
-                            depth: 25
+                    accessibility: {
+                        point: {
+                            valueSuffix: '%'
                         }
                     },
-                    xAxis: {
-                        categories: ['Belgium', 'China', 'Denmark', 'Fiji', 'Germany', 'Netherlands', 'Russia',
-                            'Sweden', 'Turkey', 'United States', 'Unspecified', 'Vietnam'],
-                        labels: {
-                            skew3d: true,
-                            style: {
-                                fontSize: '16px'
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: true,
+                                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                             }
                         }
                     },
-                    yAxis: {
-                        title: {
-                            text: 'NOK (million)',
-                            margin: 20
-                        }
-                    },
-                    tooltip: {
-                        valueSuffix: ' MNOK'
-                    },
-                    series: [{
-                        name: 'Total imports',
-                        data: [16076, 112688, 39452, 0, 94352,
-                            30495, 21813, 95908, 11596, 53771, null, 8270]
-                    }, {
-                            name: 'Total imports',
-                            data: [16076, 1128, 39452, 0, 94352,
-                                30495, 213, 95908, 11596, 53771, null, 8270]
-                        }]
+                    series:[data.data]
                 });
+
+
+
 
             });
         }

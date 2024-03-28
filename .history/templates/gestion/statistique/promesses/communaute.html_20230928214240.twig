@@ -2,7 +2,7 @@
 {% form_theme form 'widget/fields-block.html.twig' %}
 <div class="card card-tabs card-stretch card-custom card-sticky">
     <div class="card-header card-header-stretch card-header-custom">
-        <h3 class="card-title"> Evolution audiences par mois et par communaute</h3>
+        <h3 class="card-title"> Evolution des promesses par mois et par communaute</h3>
     </div>
     <div class="card-body">
         {{ form_start(form)}}
@@ -34,7 +34,6 @@
 {% endblock %}
 
 {% block java %}
-<script src="https://code.highcharts.com/highcharts.js"></script>
 <script>
     $(function () {
         init_select2();
@@ -69,21 +68,21 @@
 
         });
         function load_data(contrat, filters = []) {
-            $.getJSON("{{ path('app_gestion_statistique_audience_communaute_data') }}", { filters: filters }, function (data) {
+            $.getJSON("{{ path('app_gestion_statistique_promesse_communaute_data') }}", { filters: filters }, function (data) {
                 console.log(data.series);
                 // Data retrieved from https://www.ssb.no/statbank/table/10467/
-                const chart = Highcharts.chart('container', {
+                 const chart = Highcharts.chart('container', {
 
                     chart: {
                         type: 'column'
                     },
 
                     title: {
-                        text: 'Evolution audiences par mois et par communaute '
+                        text: 'Evolution des promessses par mois et par communaute '
                     },
 
                     subtitle: {
-                        text: 'AUDIENCES'
+                        text: 'Promesses'
                     },
 
                     legend: {
@@ -153,8 +152,8 @@
                 });
 
 
-
-            });
+           
+         });
         }
 
 

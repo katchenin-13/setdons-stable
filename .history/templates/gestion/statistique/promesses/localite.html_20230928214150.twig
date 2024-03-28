@@ -2,13 +2,13 @@
 {% form_theme form 'widget/fields-block.html.twig' %}
 <div class="card card-tabs card-stretch card-custom card-sticky">
     <div class="card-header card-header-stretch card-header-custom">
-        <h3 class="card-title"> Evolution audiences par mois et par communaute</h3>
+        <h3 class="card-title"> Evolution des promesses par mois et par localite</h3>
     </div>
     <div class="card-body">
         {{ form_start(form)}}
         <div class="row">
             <div class="col-md-6">{{ form_row(form.date) }}</div>
-            <div class="col-md-6">{{ form_row(form.communaute) }}</div>
+            <div class="col-md-6">{{ form_row(form.localite) }}</div>
         </div>
         {{ form_end(form, {render_rest: false}) }}
         <div class="row">
@@ -34,21 +34,20 @@
 {% endblock %}
 
 {% block java %}
-<script src="https://code.highcharts.com/highcharts.js"></script>
 <script>
     $(function () {
         init_select2();
         // load_data();
         const $dateDebut = $('#{{ form.date.vars.id }}');
-        const $communaute = $('#{{ form.communaute.vars.id }}');
+        const $localite = $('#{{ form.localite.vars.id }}');
         const $error = $('.alert-error');
-        $communaute.on('change', function () {
+        $localite.on('change', function () {
             const $this = $(this);
             const current_value = $this.find('option:selected').attr('data-value');
             var date = $('.date').find('option:selected').attr('value')
             $error.html('');
             if ($this.val()) {
-                load_data(current_value, { date: date, communaute: $this.val() });
+                load_data(current_value, { date: date, localite: $this.val() });
             } else {
                 $error.html('Veuillez sélectionner l\'année');
             }
@@ -58,32 +57,32 @@
         $dateDebut.on('change', function () {
             const $this = $(this);
             const current_value = $this.find('option:selected').attr('value');
-            var communaute = $('.communaute').find('option:selected').attr('value')
+            var localite = $('.localite').find('option:selected').attr('value')
             // alert(current_value)
             $error.html('');
             if ($this.val()) {
-                load_data(current_value, { date: $this.val(), communaute: communaute });
+                load_data(current_value, { date: $this.val(), localite: localite });
             } else {
-                $error.html('Veuillez sélectionner la communaute');
+                $error.html('Veuillez sélectionner la localite');
             }
 
         });
         function load_data(contrat, filters = []) {
-            $.getJSON("{{ path('app_gestion_statistique_audience_communaute_data') }}", { filters: filters }, function (data) {
+            $.getJSON("{{ path('app_gestion_statistique_promesse_localite_data') }}", { filters: filters }, function (data) {
                 console.log(data.series);
                 // Data retrieved from https://www.ssb.no/statbank/table/10467/
-                const chart = Highcharts.chart('container', {
+                 const chart = Highcharts.chart('container', {
 
                     chart: {
                         type: 'column'
                     },
 
                     title: {
-                        text: 'Evolution audiences par mois et par communaute '
+                        text: 'Evolution des promesses par mois et par localité '
                     },
 
                     subtitle: {
-                        text: 'AUDIENCES'
+                        text: 'Promesses'
                     },
 
                     legend: {
